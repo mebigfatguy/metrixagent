@@ -20,16 +20,19 @@ package com.mebigfatguy.metrixagent;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.LocalVariablesSorter;
 
-public class MetrixAgentMethodVisitor extends MethodVisitor {
+public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
 
     private Label startLabel;
     private Label endLabel;
     private Label handlerLabel;
     private String fqMethod;
+    private int startTimeReg;
 
-    public MetrixAgentMethodVisitor(MethodVisitor mv, String fullyQualifiedMethod) {
-        super(Opcodes.ASM5, mv);
+    public MetrixAgentMethodVisitor(MethodVisitor mv, int access, String desc, String fullyQualifiedMethod) {
+        super(Opcodes.ASM5, access, desc, mv);
         fqMethod = fullyQualifiedMethod;
     }
 
@@ -39,21 +42,19 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
         endLabel = new Label();
         handlerLabel = new Label();
 
+        startTimeReg = super.newLocal(Type.LONG_TYPE);
+
         super.visitLabel(startLabel);
         super.visitTryCatchBlock(startLabel, endLabel, handlerLabel, null);
         super.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
+        super.visitVarInsn(Opcodes.LSTORE, startTimeReg);
         super.visitCode();
-    }
-
-    @Override
-    public void visitEnd() {
         super.visitLabel(endLabel);
         super.visitLabel(handlerLabel);
         super.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
+        super.visitVarInsn(Opcodes.LLOAD, startTimeReg);
         super.visitInsn(Opcodes.LSUB);
         super.visitLdcInsn(fqMethod);
         super.visitMethodInsn(Opcodes.INVOKESTATIC, MetrixAgentRecorder.class.getName().replace('.', '/'), "record", "(JLjava/lang/String;)Z", false);
-        super.visitEnd();
     }
-
 }

@@ -40,6 +40,6 @@ public class MetrixAgentClassVisitor extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
 
-        return new MetrixAgentMethodVisitor(mv, clsName + "#" + name + desc);
+        return new MetrixAgentMethodVisitor(mv, access, desc, clsName + "#" + name + desc);
     }
 }
