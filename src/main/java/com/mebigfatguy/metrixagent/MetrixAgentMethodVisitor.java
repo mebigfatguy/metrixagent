@@ -49,6 +49,10 @@ public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
         super.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
         super.visitVarInsn(Opcodes.LSTORE, startTimeReg);
         super.visitCode();
+    }
+
+    @Override
+    public void visitMaxs(int maxStack, int maxLocals) {
         super.visitLabel(endLabel);
         super.visitLabel(handlerLabel);
         super.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
@@ -56,5 +60,7 @@ public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
         super.visitInsn(Opcodes.LSUB);
         super.visitLdcInsn(fqMethod);
         super.visitMethodInsn(Opcodes.INVOKESTATIC, MetrixAgentRecorder.class.getName().replace('.', '/'), "record", "(JLjava/lang/String;)Z", false);
+        super.visitMaxs(maxStack, maxLocals);
     }
+
 }
