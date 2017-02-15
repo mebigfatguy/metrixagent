@@ -17,9 +17,23 @@
  */
 package com.mebigfatguy.metrixagent;
 
+import java.util.concurrent.TimeUnit;
+
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+
 public class MetrixAgentRecorder {
 
-    public static void record(long time, String fqMethod) {
+    private static final MetricRegistry metrics = new MetricRegistry();
+    private static final JmxReporter reporter = JmxReporter.forRegistry(metrics).build();
 
+    static {
+        reporter.start();
+    }
+
+    public static void record(long time, String fqMethod) {
+        Timer t = metrics.timer(fqMethod);
+        t.update(time, TimeUnit.MILLISECONDS);
     }
 }
