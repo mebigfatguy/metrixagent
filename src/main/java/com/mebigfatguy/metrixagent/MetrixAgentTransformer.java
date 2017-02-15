@@ -17,6 +17,10 @@
  */
 package com.mebigfatguy.metrixagent;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
@@ -46,7 +50,20 @@ public class MetrixAgentTransformer implements ClassFileTransformer {
             ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
             ClassVisitor timeVisitor = new MetrixAgentClassVisitor(cw);
             cr.accept(timeVisitor, ClassReader.EXPAND_FRAMES);
-            return cw.toByteArray();
+            byte[] newClass = cw.toByteArray();
+
+            int slashPos = className.lastIndexOf("/");
+            if (slashPos >= 0) {
+                String pkgName = className.substring(0, slashPos);
+                File f = new File("/tmp", pkgName);
+                f.mkdirs();
+            }
+
+            try (OutputStream os = new BufferedOutputStream(new FileOutputStream("/tmp/" + className + ".class"))) {
+                os.write(newClass);
+            }
+
+            return newClass;
         } catch (Exception e) {
             e.printStackTrace();
             return classfileBuffer;
