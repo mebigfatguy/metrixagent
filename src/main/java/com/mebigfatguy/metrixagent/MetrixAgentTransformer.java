@@ -41,12 +41,17 @@ public class MetrixAgentTransformer implements ClassFileTransformer {
             return classfileBuffer;
         }
 
-        ClassReader cr = new ClassReader(classfileBuffer);
-        ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
-        ClassVisitor timeVisitor = new MetrixAgentClassVisitor(cw);
-        cr.accept(timeVisitor, ClassReader.EXPAND_FRAMES);
+        try {
+            ClassReader cr = new ClassReader(classfileBuffer);
+            ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+            ClassVisitor timeVisitor = new MetrixAgentClassVisitor(cw);
+            cr.accept(timeVisitor, ClassReader.EXPAND_FRAMES);
+            return cw.toByteArray();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return classfileBuffer;
+        }
 
-        return cw.toByteArray();
     }
 
     private boolean isPackageOfInterest(String className) {

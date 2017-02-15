@@ -35,7 +35,6 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitCode() {
-        super.visitCode();
         startLabel = new Label();
         endLabel = new Label();
         handlerLabel = new Label();
@@ -43,6 +42,7 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
         super.visitLabel(startLabel);
         super.visitTryCatchBlock(startLabel, endLabel, handlerLabel, null);
         super.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
+        super.visitCode();
     }
 
     @Override
