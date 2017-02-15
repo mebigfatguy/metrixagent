@@ -50,6 +50,12 @@ public class MetrixAgentTransformer implements ClassFileTransformer {
     }
 
     private boolean isPackageOfInterest(String className) {
+        for (String pkg : packages) {
+            if (className.startsWith(pkg)) {
+                return true;
+            }
+        }
+
         return false;
     }
 
