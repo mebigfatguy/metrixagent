@@ -26,9 +26,11 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
     private Label startLabel;
     private Label endLabel;
     private Label handlerLabel;
+    private String fqMethod;
 
-    public MetrixAgentMethodVisitor(MethodVisitor mv, String fqMethod) {
+    public MetrixAgentMethodVisitor(MethodVisitor mv, String fullyQualifiedMethod) {
         super(Opcodes.ASM5, mv);
+        fqMethod = fullyQualifiedMethod;
     }
 
     @Override
@@ -49,7 +51,8 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
         super.visitLabel(handlerLabel);
         super.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
         super.visitInsn(Opcodes.LSUB);
-        super.visitInsn(Opcodes.POP2);
+        super.visitLdcInsn(fqMethod);
+        super.visitMethodInsn(Opcodes.INVOKESTATIC, MetrixAgentRecorder.class.getName().replace('.', '/'), "record", "(JLjava/lang/String;)Z", false);
         super.visitEnd();
     }
 

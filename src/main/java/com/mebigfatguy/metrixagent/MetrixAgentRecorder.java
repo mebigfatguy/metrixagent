@@ -19,4 +19,7 @@ package com.mebigfatguy.metrixagent;
 
 public class MetrixAgentRecorder {
 
+    public static void record(long time, String fqMethod) {
+
+    }
 }
