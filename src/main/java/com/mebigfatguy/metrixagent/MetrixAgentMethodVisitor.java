@@ -175,11 +175,11 @@ public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
 
     private int getReturnOp(Type returnType) {
         switch (returnType.getSort()) {
+            case Type.VOID:
+                return Opcodes.RETURN;
+
             case Type.OBJECT:
                 return Opcodes.ARETURN;
-
-            case Type.INT:
-                return Opcodes.IRETURN;
 
             case Type.LONG:
                 return Opcodes.LRETURN;
@@ -190,9 +190,9 @@ public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
             case Type.DOUBLE:
                 return Opcodes.DRETURN;
 
-            case Type.VOID:
+            case Type.INT:
             default:
-                return Opcodes.RETURN;
+                return Opcodes.IRETURN;
         }
     }
 
