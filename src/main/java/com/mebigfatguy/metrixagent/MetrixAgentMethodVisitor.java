@@ -139,7 +139,7 @@ public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
         super.visitVarInsn(Opcodes.LLOAD, startTimeReg);
         super.visitInsn(Opcodes.LSUB);
         super.visitLdcInsn(fqMethod);
-        super.visitMethodInsn(Opcodes.INVOKESTATIC, MetrixAgentRecorder.class.getName().replace('.', '/'), "record", "(JLjava/lang/String;)Z", false);
+        super.visitMethodInsn(Opcodes.INVOKESTATIC, MetrixAgentRecorder.class.getName().replace('.', '/'), "record", "(JLjava/lang/String;)V", false);
     }
 
     private void injectPushReturnValueOnStack() {
