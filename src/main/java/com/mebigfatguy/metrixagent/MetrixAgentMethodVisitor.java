@@ -73,9 +73,9 @@ public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
             super.visitLocalVariable("$returnVal", returnType.getDescriptor(), null, procStartLabel, procEndLabel, returnValReg);
         }
 
-        super.visitLabel(tryLabel);
         super.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
         super.visitVarInsn(Opcodes.LSTORE, startTimeReg);
+        super.visitLabel(tryLabel);
         super.visitTryCatchBlock(tryLabel, tryEndLabel, handlerLabel, null);
         super.visitCode();
     }
