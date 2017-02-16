@@ -39,8 +39,8 @@ public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
     private String fqMethod;
     private int startTimeReg;
     private Type returnType;
-    private int returnValReg;
     private int returnOp;
+    private int returnValReg;
 
     static {
         returnOps.set(Opcodes.RETURN);
@@ -68,7 +68,8 @@ public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
         startTimeReg = super.newLocal(Type.LONG_TYPE);
 
         returnType = getReturnType(methodDesc);
-        if (returnType != Type.VOID_TYPE) {
+        returnOp = getReturnOp(returnType);
+        if (returnOp != Opcodes.RETURN) {
             returnValReg = super.newLocal(returnType);
             super.visitLocalVariable("$returnVal", returnType.getDescriptor(), null, procStartLabel, procEndLabel, returnValReg);
         }
@@ -84,8 +85,7 @@ public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
     public void visitInsn(int opcode) {
 
         if (returnOps.get(opcode)) {
-            returnOp = opcode;
-            if (returnType != Type.VOID_TYPE) {
+            if (returnOp != Opcodes.RETURN) {
                 switch (returnType.getSort()) {
                     case Type.OBJECT:
                         visitVarInsn(Opcodes.ASTORE, returnValReg);
@@ -128,7 +128,7 @@ public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
         super.visitInsn(returnOp);
         super.visitLabel(procEndLabel);
         super.visitLocalVariable("$startTime", "J", null, procStartLabel, procEndLabel, startTimeReg);
-        if (returnType != Type.VOID_TYPE) {
+        if (returnOp != Opcodes.RETURN) {
             super.visitLocalVariable("$returnVal", returnType.getDescriptor(), null, procStartLabel, procEndLabel, returnValReg);
         }
         super.visitMaxs(maxStack, maxLocals);
@@ -143,7 +143,7 @@ public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
     }
 
     private void injectPushReturnValueOnStack() {
-        if (returnType != Type.VOID_TYPE) {
+        if (returnOp != Opcodes.RETURN) {
             switch (returnType.getSort()) {
                 case Type.OBJECT:
                     visitVarInsn(Opcodes.ALOAD, returnValReg);
@@ -171,6 +171,28 @@ public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
     private Type getReturnType(String desc) {
         Method m = new Method("x", desc);
         return m.getReturnType();
+    }
+
+    private int getReturnOp(Type returnType) {
+        switch (returnType.getSort()) {
+            case Type.OBJECT:
+                return Opcodes.ARETURN;
+
+            case Type.INT:
+
+            case Type.LONG:
+                return Opcodes.LRETURN;
+
+            case Type.FLOAT:
+                return Opcodes.FRETURN;
+
+            case Type.DOUBLE:
+                return Opcodes.DRETURN;
+
+            case Type.VOID:
+            default:
+                return Opcodes.RETURN;
+        }
     }
 
 }
