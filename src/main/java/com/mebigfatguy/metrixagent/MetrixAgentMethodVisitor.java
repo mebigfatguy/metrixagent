@@ -34,6 +34,7 @@ public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
     private Label tryLabel;
     private Label tryEndLabel;
     private Label handlerLabel;
+    private Label procStartLabel;
     private Label procEndLabel;
     private String fqMethod;
     private int startTimeReg;
@@ -58,14 +59,13 @@ public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
 
     @Override
     public void visitCode() {
-        Label procStartLabel = new Label();
+        procStartLabel = new Label();
         procEndLabel = new Label();
         tryLabel = new Label();
         tryEndLabel = new Label();
         handlerLabel = new Label();
 
         startTimeReg = super.newLocal(Type.LONG_TYPE);
-        super.visitLocalVariable("$startTime", "J", null, procStartLabel, procEndLabel, startTimeReg);
 
         returnType = getReturnType(methodDesc);
         if (returnType != Type.VOID_TYPE) {
@@ -127,6 +127,10 @@ public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
         }
         super.visitInsn(returnOp);
         super.visitLabel(procEndLabel);
+        super.visitLocalVariable("$startTime", "J", null, procStartLabel, procEndLabel, startTimeReg);
+        if (returnType != Type.VOID_TYPE) {
+            super.visitLocalVariable("$returnVal", returnType.getDescriptor(), null, procStartLabel, procEndLabel, returnValReg);
+        }
         super.visitMaxs(maxStack, maxLocals);
     }
 
