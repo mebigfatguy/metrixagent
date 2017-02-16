@@ -179,6 +179,7 @@ public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
                 return Opcodes.ARETURN;
 
             case Type.INT:
+                return Opcodes.IRETURN;
 
             case Type.LONG:
                 return Opcodes.LRETURN;
