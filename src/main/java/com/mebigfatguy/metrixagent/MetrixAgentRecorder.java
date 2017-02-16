@@ -33,7 +33,11 @@ public class MetrixAgentRecorder {
     }
 
     public static void record(long time, String fqMethod) {
-        Timer t = metrics.timer(fqMethod);
-        t.update(time, TimeUnit.MILLISECONDS);
+        try {
+            Timer t = metrics.timer(fqMethod);
+            t.update(time, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            // make sure no exceptions leak out of this method
+        }
     }
 }
