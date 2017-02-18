@@ -85,28 +85,29 @@ public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
     public void visitInsn(int opcode) {
 
         if (returnOps.get(opcode)) {
-            if (returnOp != Opcodes.RETURN) {
-                switch (returnType.getSort()) {
-                    case Type.OBJECT:
-                        visitVarInsn(Opcodes.ASTORE, returnValReg);
-                    break;
+            switch (returnType.getSort()) {
+                case Type.OBJECT:
+                    visitVarInsn(Opcodes.ASTORE, returnValReg);
+                break;
 
-                    case Type.INT:
-                        visitVarInsn(Opcodes.ISTORE, returnValReg);
-                    break;
+                case Type.INT:
+                    visitVarInsn(Opcodes.ISTORE, returnValReg);
+                break;
 
-                    case Type.LONG:
-                        visitVarInsn(Opcodes.LSTORE, returnValReg);
-                    break;
+                case Type.LONG:
+                    visitVarInsn(Opcodes.LSTORE, returnValReg);
+                break;
 
-                    case Type.FLOAT:
-                        visitVarInsn(Opcodes.FSTORE, returnValReg);
-                    break;
+                case Type.FLOAT:
+                    visitVarInsn(Opcodes.FSTORE, returnValReg);
+                break;
 
-                    case Type.DOUBLE:
-                        visitVarInsn(Opcodes.DSTORE, returnValReg);
-                    break;
-                }
+                case Type.DOUBLE:
+                    visitVarInsn(Opcodes.DSTORE, returnValReg);
+                break;
+
+                default:
+                break;
             }
 
             injectExitCode();
