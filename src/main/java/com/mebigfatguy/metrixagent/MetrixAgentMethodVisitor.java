@@ -124,23 +124,23 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
         if (returnOps.get(opcode)) {
             switch (returnType.getSort()) {
                 case Type.OBJECT:
-                    visitVarInsn(Opcodes.ASTORE, returnValReg);
+                    super.visitVarInsn(Opcodes.ASTORE, returnValReg);
                 break;
 
                 case Type.INT:
-                    visitVarInsn(Opcodes.ISTORE, returnValReg);
+                    super.visitVarInsn(Opcodes.ISTORE, returnValReg);
                 break;
 
                 case Type.LONG:
-                    visitVarInsn(Opcodes.LSTORE, returnValReg);
+                    super.visitVarInsn(Opcodes.LSTORE, returnValReg);
                 break;
 
                 case Type.FLOAT:
-                    visitVarInsn(Opcodes.FSTORE, returnValReg);
+                    super.visitVarInsn(Opcodes.FSTORE, returnValReg);
                 break;
 
                 case Type.DOUBLE:
-                    visitVarInsn(Opcodes.DSTORE, returnValReg);
+                    super.visitVarInsn(Opcodes.DSTORE, returnValReg);
                 break;
 
                 default:
