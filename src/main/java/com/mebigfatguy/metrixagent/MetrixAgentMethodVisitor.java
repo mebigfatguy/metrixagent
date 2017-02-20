@@ -92,12 +92,16 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
-        index = (index < firstFreeSlot) ? index : index + remappingRegOffset;
 
+        return;
+        /* - remapping variable ranges, especially with name collisions is confusingly difficult
+        index = (index < firstFreeSlot) ? index : index + remappingRegOffset;
+        
         VariableRange range = ranges.get(index);
         if (range != null) {
             super.visitLocalVariable(name, desc, signature, range.getStart(), range.getFinish(), index);
         }
+        */
     }
 
     @Override
