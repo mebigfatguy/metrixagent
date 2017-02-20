@@ -92,12 +92,17 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
-        super.visitLocalVariable(name, desc, signature, start, end, (index == 0) ? index : index + remappingRegOffset);
+        super.visitLocalVariable(name, desc, signature, start, end, ((index == 0) && (!isStatic)) ? index : index + remappingRegOffset);
     }
 
     @Override
     public void visitVarInsn(int opcode, int var) {
-        super.visitVarInsn(opcode, (var == 0) ? var : var + remappingRegOffset);
+        super.visitVarInsn(opcode, ((var == 0) && (!isStatic)) ? var : var + remappingRegOffset);
+    }
+
+    @Override
+    public void visitIincInsn(int var, int increment) {
+        super.visitIincInsn(((var == 0) && (!isStatic)) ? var : var + remappingRegOffset, increment);
     }
 
     @Override
