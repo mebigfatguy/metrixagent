@@ -38,6 +38,9 @@ public class MetrixAgentTransformer implements ClassFileTransformer {
 
     public MetrixAgentTransformer(String[] packages) {
         this.packages = packages;
+        for (int i = 0; i < packages.length; i++) {
+            packages[i] = packages[i].replace('.', '/');
+        }
         tmpDir = new File(System.getProperty("java.io.tmpdir"));
     }
 
