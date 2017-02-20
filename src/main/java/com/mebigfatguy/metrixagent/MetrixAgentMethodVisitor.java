@@ -70,9 +70,9 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
         }
         returnType = getReturnType(methodDesc);
         if (returnType == Type.VOID_TYPE) {
-            remappingRegOffset = startTimeReg + 2;
+            remappingRegOffset = 2;
         } else {
-            remappingRegOffset = startTimeReg + 2 + ((returnType.equals(Type.LONG_TYPE) || (returnType.equals(Type.DOUBLE_TYPE))) ? 2 : 1);
+            remappingRegOffset = 2 + ((returnType.equals(Type.LONG_TYPE) || (returnType.equals(Type.DOUBLE_TYPE))) ? 2 : 1);
         }
 
         procStartLabel = new Label();
