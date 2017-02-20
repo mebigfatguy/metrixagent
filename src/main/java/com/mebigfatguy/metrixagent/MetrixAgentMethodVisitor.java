@@ -184,23 +184,23 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
         if (returnOp != Opcodes.RETURN) {
             switch (returnType.getSort()) {
                 case Type.OBJECT:
-                    visitVarInsn(Opcodes.ALOAD, returnValReg);
+                    super.visitVarInsn(Opcodes.ALOAD, returnValReg);
                 break;
 
                 case Type.INT:
-                    visitVarInsn(Opcodes.ILOAD, returnValReg);
+                    super.visitVarInsn(Opcodes.ILOAD, returnValReg);
                 break;
 
                 case Type.LONG:
-                    visitVarInsn(Opcodes.LLOAD, returnValReg);
+                    super.visitVarInsn(Opcodes.LLOAD, returnValReg);
                 break;
 
                 case Type.FLOAT:
-                    visitVarInsn(Opcodes.FLOAD, returnValReg);
+                    super.visitVarInsn(Opcodes.FLOAD, returnValReg);
                 break;
 
                 case Type.DOUBLE:
-                    visitVarInsn(Opcodes.DLOAD, returnValReg);
+                    super.visitVarInsn(Opcodes.DLOAD, returnValReg);
                 break;
             }
         }
@@ -249,7 +249,7 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
 
         public VariableRange() {
             start = new Label();
-            MetrixAgentMethodVisitor.this.visitLabel(start);
+            MetrixAgentMethodVisitor.super.visitLabel(start);
         }
 
         public Label getStart() {
