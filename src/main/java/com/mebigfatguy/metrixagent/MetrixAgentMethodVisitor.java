@@ -73,9 +73,11 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
             returnValReg = 3;
         }
         returnType = getReturnType(methodDesc);
+        returnOp = getReturnOp(returnType);
         remappingRegOffset = 2;
         if (returnType != Type.VOID_TYPE) {
             remappingRegOffset += ((returnType.equals(Type.LONG_TYPE) || (returnType.equals(Type.DOUBLE_TYPE))) ? 2 : 1);
+            injectInitializeReturnVar();
         }
 
         procStartLabel = new Label();
@@ -83,8 +85,6 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
         tryLabel = new Label();
         tryEndLabel = new Label();
         handlerLabel = new Label();
-
-        returnOp = getReturnOp(returnType);
 
         super.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
         super.visitVarInsn(Opcodes.LSTORE, startTimeReg);
@@ -170,6 +170,37 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
             super.visitLocalVariable("$returnVal", returnType.getDescriptor(), null, procStartLabel, procEndLabel, returnValReg);
         }
         super.visitMaxs(maxStack, maxLocals);
+    }
+
+    private void injectInitializeReturnVar() {
+        if (returnOp != Opcodes.RETURN) {
+            switch (returnType.getSort()) {
+                case Type.OBJECT:
+                    super.visitInsn(Opcodes.ACONST_NULL);
+                    super.visitVarInsn(Opcodes.ASTORE, returnValReg);
+                break;
+
+                case Type.INT:
+                    super.visitIntInsn(Opcodes.BIPUSH, 0);
+                    super.visitVarInsn(Opcodes.ISTORE, returnValReg);
+                break;
+
+                case Type.LONG:
+                    super.visitLdcInsn(0L);
+                    super.visitVarInsn(Opcodes.LSTORE, returnValReg);
+                break;
+
+                case Type.FLOAT:
+                    super.visitLdcInsn(0.0f);
+                    super.visitVarInsn(Opcodes.FSTORE, returnValReg);
+                break;
+
+                case Type.DOUBLE:
+                    super.visitLdcInsn(0.0);
+                    super.visitVarInsn(Opcodes.DSTORE, returnValReg);
+                break;
+            }
+        }
     }
 
     private void injectExitCode() {
