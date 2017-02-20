@@ -23,14 +23,14 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.LocalVariablesSorter;
 import org.objectweb.asm.commons.Method;
 
-public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
+public class MetrixAgentMethodVisitor extends MethodVisitor {
 
     private static final BitSet returnOps = new BitSet();
 
     private String methodDesc;
+    private boolean isStatic;
     private Label tryLabel;
     private Label tryEndLabel;
     private Label handlerLabel;
@@ -41,6 +41,7 @@ public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
     private Type returnType;
     private int returnOp;
     private int returnValReg;
+    private int remappingRegOffset;
 
     static {
         returnOps.set(Opcodes.RETURN);
@@ -52,33 +53,51 @@ public class MetrixAgentMethodVisitor extends LocalVariablesSorter {
     }
 
     public MetrixAgentMethodVisitor(MethodVisitor mv, int access, String desc, String fullyQualifiedMethod) {
-        super(Opcodes.ASM5, access, desc, mv);
+        super(Opcodes.ASM5, mv);
         fqMethod = fullyQualifiedMethod;
         methodDesc = desc;
+        isStatic = (access & Opcodes.ACC_STATIC) != 0;
     }
 
     @Override
     public void visitCode() {
+        if (isStatic) {
+            startTimeReg = 0;
+            returnValReg = 2;
+        } else {
+            startTimeReg = 1;
+            returnValReg = 3;
+        }
+        returnType = getReturnType(methodDesc);
+        if (returnType == Type.VOID_TYPE) {
+            remappingRegOffset = startTimeReg + 2;
+        } else {
+            remappingRegOffset = startTimeReg + 2 + ((returnType.equals(Type.LONG_TYPE) || (returnType.equals(Type.DOUBLE_TYPE))) ? 2 : 1);
+        }
+
         procStartLabel = new Label();
         procEndLabel = new Label();
         tryLabel = new Label();
         tryEndLabel = new Label();
         handlerLabel = new Label();
 
-        startTimeReg = super.newLocal(Type.LONG_TYPE);
-
-        returnType = getReturnType(methodDesc);
         returnOp = getReturnOp(returnType);
-        if (returnOp != Opcodes.RETURN) {
-            returnValReg = super.newLocal(returnType);
-            super.visitLocalVariable("$returnVal", returnType.getDescriptor(), null, procStartLabel, procEndLabel, returnValReg);
-        }
 
         super.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
         super.visitVarInsn(Opcodes.LSTORE, startTimeReg);
         super.visitLabel(tryLabel);
         super.visitTryCatchBlock(tryLabel, tryEndLabel, handlerLabel, null);
         super.visitCode();
+    }
+
+    @Override
+    public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
+        super.visitLocalVariable(name, desc, signature, start, end, (index == 0) ? index : index + remappingRegOffset);
+    }
+
+    @Override
+    public void visitVarInsn(int opcode, int var) {
+        super.visitVarInsn(opcode, (var == 0) ? var : var + remappingRegOffset);
     }
 
     @Override
