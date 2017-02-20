@@ -18,6 +18,8 @@
 package com.mebigfatguy.metrixagent;
 
 import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -42,6 +44,7 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
     private int returnOp;
     private int returnValReg;
     private int remappingRegOffset;
+    private Map<Integer, VariableRange> ranges;
 
     static {
         returnOps.set(Opcodes.RETURN);
@@ -57,6 +60,7 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
         fqMethod = fullyQualifiedMethod;
         methodDesc = desc;
         isStatic = (access & Opcodes.ACC_STATIC) != 0;
+        ranges = new HashMap<>();
     }
 
     @Override
@@ -92,17 +96,27 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
-        super.visitLocalVariable(name, desc, signature, start, end, ((index == 0) && (!isStatic)) ? index : index + remappingRegOffset);
+        index = ((index == 0) && (!isStatic)) ? index : index + remappingRegOffset;
+
+        VariableRange range = ranges.get(index);
+        if (range != null) {
+            super.visitLocalVariable(name, desc, signature, range.getStart(), range.getFinish(), index);
+        }
     }
 
     @Override
     public void visitVarInsn(int opcode, int var) {
-        super.visitVarInsn(opcode, ((var == 0) && (!isStatic)) ? var : var + remappingRegOffset);
+        var = ((var == 0) && (!isStatic)) ? var : var + remappingRegOffset;
+        updateRange(var);
+
+        super.visitVarInsn(opcode, var);
     }
 
     @Override
     public void visitIincInsn(int var, int increment) {
-        super.visitIincInsn(((var == 0) && (!isStatic)) ? var : var + remappingRegOffset, increment);
+        var = ((var == 0) && (!isStatic)) ? var : var + remappingRegOffset;
+        updateRange(var);
+        super.visitIincInsn(var, increment);
     }
 
     @Override
@@ -221,4 +235,35 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
         }
     }
 
+    private void updateRange(int var) {
+        VariableRange range = ranges.get(Integer.valueOf(var));
+        if (range == null) {
+            range = new VariableRange();
+            ranges.put(Integer.valueOf(var), range);
+        }
+        range.setFinish();
+    }
+
+    private final class VariableRange {
+        private Label start;
+        private Label finish;
+
+        public VariableRange() {
+            start = new Label();
+            MetrixAgentMethodVisitor.this.visitLabel(start);
+        }
+
+        public Label getStart() {
+            return start;
+        }
+
+        public Label getFinish() {
+            return finish;
+        }
+
+        public void setFinish() {
+            finish = new Label();
+            MetrixAgentMethodVisitor.this.visitLabel(finish);
+        }
+    }
 }
