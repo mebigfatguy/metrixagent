@@ -39,6 +39,7 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
     private Label procStartLabel;
     private Label procEndLabel;
     private String fqMethod;
+    private int firstFreeSlot;
     private int startTimeReg;
     private Type returnType;
     private int returnOp;
@@ -65,13 +66,9 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitCode() {
-        if (isStatic) {
-            startTimeReg = 0;
-            returnValReg = 2;
-        } else {
-            startTimeReg = 1;
-            returnValReg = 3;
-        }
+        firstFreeSlot = getFirstFreeSlot(methodDesc);
+        startTimeReg = firstFreeSlot;
+        returnValReg = firstFreeSlot + 2;
         returnType = getReturnType(methodDesc);
         returnOp = getReturnOp(returnType);
         remappingRegOffset = 2;
@@ -95,7 +92,7 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
-        index = ((index == 0) && (!isStatic)) ? index : index + remappingRegOffset;
+        index = (index < firstFreeSlot) ? index : index + remappingRegOffset;
 
         VariableRange range = ranges.get(index);
         if (range != null) {
@@ -105,7 +102,7 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitVarInsn(int opcode, int var) {
-        var = ((var == 0) && (!isStatic)) ? var : var + remappingRegOffset;
+        var = (var < firstFreeSlot) ? var : var + remappingRegOffset;
         updateRange(var);
 
         super.visitVarInsn(opcode, var);
@@ -113,7 +110,7 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitIincInsn(int var, int increment) {
-        var = ((var == 0) && (!isStatic)) ? var : var + remappingRegOffset;
+        var = (var < firstFreeSlot) ? var : var + remappingRegOffset;
         updateRange(var);
         super.visitIincInsn(var, increment);
     }
@@ -240,6 +237,16 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
     private Type getReturnType(String desc) {
         Method m = new Method("x", desc);
         return m.getReturnType();
+    }
+
+    private int getFirstFreeSlot(String desc) {
+        int firstSlot = isStatic ? 0 : 1;
+        Method m = new Method("x", desc);
+        for (Type t : m.getArgumentTypes()) {
+            firstSlot += (t.equals(Type.LONG_TYPE) || t.equals(Type.DOUBLE_TYPE)) ? 2 : 1;
+        }
+
+        return firstSlot;
     }
 
     private int getReturnOp(Type returnType) {
