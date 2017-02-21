@@ -31,17 +31,20 @@ import org.objectweb.asm.ClassWriter;
 
 public class MetrixAgentTransformer implements ClassFileTransformer {
 
-    private static final boolean DUMP_GENERATED_CLASSES = true;
-
     private String[] packages;
     private File tmpDir;
+    private boolean debug;
 
-    public MetrixAgentTransformer(String[] packages) {
+    public MetrixAgentTransformer(String[] packages, boolean debugFlag) {
         this.packages = packages;
         for (int i = 0; i < packages.length; i++) {
             packages[i] = packages[i].replace('.', '/');
         }
-        tmpDir = new File(System.getProperty("java.io.tmpdir"));
+
+        debug = debugFlag;
+        if (debug) {
+            tmpDir = new File(System.getProperty("java.io.tmpdir"));
+        }
     }
 
     @Override
@@ -59,7 +62,7 @@ public class MetrixAgentTransformer implements ClassFileTransformer {
             cr.accept(timeVisitor, ClassReader.EXPAND_FRAMES);
             byte[] newClass = cw.toByteArray();
 
-            if (DUMP_GENERATED_CLASSES) {
+            if (debug) {
                 int slashPos = className.lastIndexOf("/");
                 if (slashPos >= 0) {
                     String pkgName = className.substring(0, slashPos);

@@ -23,9 +23,18 @@ public class MetrixAgent {
 
     public static void premain(String agentArguments, Instrumentation instrumentation) {
 
-        String[] packages = agentArguments.split(":");
+        String[] parts = agentArguments.split("\\#");
 
-        MetrixAgentTransformer mutator = new MetrixAgentTransformer(packages);
+        String[] packages = parts[0].split("(:|;)");
+        boolean debugFlag;
+
+        if (parts.length > 1) {
+            debugFlag = "debug".equals(parts[1]);
+        } else {
+            debugFlag = false;
+        }
+
+        MetrixAgentTransformer mutator = new MetrixAgentTransformer(packages, debugFlag);
         instrumentation.addTransformer(mutator);
     }
 
