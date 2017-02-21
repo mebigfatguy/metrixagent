@@ -40,7 +40,7 @@ public class MetrixAgentClassVisitor extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
 
-        if ("<init>".equals(name)) {
+        if ("<init>".equals(name) || ((access & Opcodes.ACC_SYNTHETIC) != 0)) {
             return mv;
         }
 
