@@ -96,7 +96,7 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
         return;
         /* - remapping variable ranges, especially with name collisions is confusingly difficult
         index = (index < firstFreeSlot) ? index : index + remappingRegOffset;
-        
+
         VariableRange range = ranges.get(index);
         if (range != null) {
             super.visitLocalVariable(name, desc, signature, range.getStart(), range.getFinish(), index);
@@ -125,6 +125,7 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
         if (returnOps.get(opcode)) {
             switch (returnType.getSort()) {
                 case Type.OBJECT:
+                case Type.ARRAY:
                     super.visitVarInsn(Opcodes.ASTORE, returnValReg);
                 break;
 
@@ -181,6 +182,7 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
         if (returnOp != Opcodes.RETURN) {
             switch (returnType.getSort()) {
                 case Type.OBJECT:
+                case Type.ARRAY:
                     super.visitInsn(Opcodes.ACONST_NULL);
                     super.visitVarInsn(Opcodes.ASTORE, returnValReg);
                 break;
@@ -224,6 +226,7 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
         if (returnOp != Opcodes.RETURN) {
             switch (returnType.getSort()) {
                 case Type.OBJECT:
+                case Type.ARRAY:
                     super.visitVarInsn(Opcodes.ALOAD, returnValReg);
                 break;
 
@@ -271,6 +274,7 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
                 return Opcodes.RETURN;
 
             case Type.OBJECT:
+            case Type.ARRAY:
                 return Opcodes.ARETURN;
 
             case Type.LONG:
