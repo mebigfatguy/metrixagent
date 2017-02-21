@@ -128,6 +128,10 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
                     super.visitVarInsn(Opcodes.ASTORE, returnValReg);
                 break;
 
+                case Type.BOOLEAN:
+                case Type.BYTE:
+                case Type.CHAR:
+                case Type.SHORT:
                 case Type.INT:
                     super.visitVarInsn(Opcodes.ISTORE, returnValReg);
                 break;
@@ -181,6 +185,10 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
                     super.visitVarInsn(Opcodes.ASTORE, returnValReg);
                 break;
 
+                case Type.BOOLEAN:
+                case Type.BYTE:
+                case Type.CHAR:
+                case Type.SHORT:
                 case Type.INT:
                     super.visitIntInsn(Opcodes.BIPUSH, 0);
                     super.visitVarInsn(Opcodes.ISTORE, returnValReg);
@@ -219,6 +227,10 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
                     super.visitVarInsn(Opcodes.ALOAD, returnValReg);
                 break;
 
+                case Type.BOOLEAN:
+                case Type.BYTE:
+                case Type.CHAR:
+                case Type.SHORT:
                 case Type.INT:
                     super.visitVarInsn(Opcodes.ILOAD, returnValReg);
                 break;
@@ -270,6 +282,10 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
             case Type.DOUBLE:
                 return Opcodes.DRETURN;
 
+            case Type.BOOLEAN:
+            case Type.BYTE:
+            case Type.CHAR:
+            case Type.SHORT:
             case Type.INT:
             default:
                 return Opcodes.IRETURN;
