@@ -26,7 +26,7 @@ import com.codahale.metrics.Timer;
 public class MetrixAgentRecorder {
 
     private static final MetricRegistry metrics = new MetricRegistry();
-    private static final JmxReporter reporter = JmxReporter.forRegistry(metrics).build();
+    private static final JmxReporter reporter = JmxReporter.forRegistry(metrics).createsObjectNamesWith(new MetrixAgentObjectNameFactory()).build();
 
     static {
         reporter.start();
@@ -38,6 +38,7 @@ public class MetrixAgentRecorder {
             t.update(time, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             // make sure no exceptions leak out of this method
+            e.printStackTrace();
         }
     }
 }
