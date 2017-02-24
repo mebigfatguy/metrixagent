@@ -21,6 +21,7 @@ import java.util.AbstractSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.management.MalformedObjectNameException;
@@ -75,6 +76,10 @@ public class MetrixAgentObjectNameFactory implements ObjectNameFactory {
 
                     @Override
                     public Map.Entry<K, V> next() {
+                        if (current < 0) {
+                            throw new NoSuchElementException();
+                        }
+
                         final String key = "A" + current;
                         final V v = get(key);
                         current++;
