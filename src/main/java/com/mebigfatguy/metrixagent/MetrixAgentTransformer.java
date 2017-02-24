@@ -28,8 +28,12 @@ import java.security.ProtectionDomain;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MetrixAgentTransformer implements ClassFileTransformer {
+
+    private static Logger logger = LoggerFactory.getLogger(MetrixAgentTransformer.class);
 
     private String[] packages;
     private File tmpDir;
@@ -56,6 +60,7 @@ public class MetrixAgentTransformer implements ClassFileTransformer {
         }
 
         try {
+            logger.info("Transforming class {} with metrixagent", className);
             ClassReader cr = new ClassReader(classfileBuffer);
             ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
             ClassVisitor timeVisitor = new MetrixAgentClassVisitor(cw);
@@ -77,7 +82,7 @@ public class MetrixAgentTransformer implements ClassFileTransformer {
 
             return newClass;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Failed transforming class {} with metrixagent", className);
             return classfileBuffer;
         }
 

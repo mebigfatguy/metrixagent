@@ -19,12 +19,16 @@ package com.mebigfatguy.metrixagent;
 
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 public class MetrixAgentRecorder {
 
+    private static final Logger logger = LoggerFactory.getLogger(MetrixAgentRecorder.class);
     private static final MetricRegistry metrics = new MetricRegistry();
     private static final JmxReporter reporter = JmxReporter.forRegistry(metrics).createsObjectNamesWith(new MetrixAgentObjectNameFactory()).build();
 
@@ -38,7 +42,7 @@ public class MetrixAgentRecorder {
             t.update(time, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             // make sure no exceptions leak out of this method
-            e.printStackTrace();
+            logger.error("Failed creating and updating metrix for {}", fqMethod);
         }
     }
 }
