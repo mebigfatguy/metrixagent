@@ -57,7 +57,7 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
     }
 
     public MetrixAgentMethodVisitor(MethodVisitor mv, int access, String desc, String fullyQualifiedMethod) {
-        super(Opcodes.ASM5, mv);
+        super(Opcodes.ASM6, mv);
         fqMethod = fullyQualifiedMethod;
         methodDesc = desc;
         isStatic = (access & Opcodes.ACC_STATIC) != 0;
@@ -96,7 +96,7 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
         return;
         /* - remapping variable ranges, especially with name collisions is confusingly difficult
         index = (index < firstFreeSlot) ? index : index + remappingRegOffset;
-
+        
         VariableRange range = ranges.get(index);
         if (range != null) {
             super.visitLocalVariable(name, desc, signature, range.getStart(), range.getFinish(), index);
