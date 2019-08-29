@@ -27,7 +27,7 @@ import java.util.Set;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import com.codahale.metrics.ObjectNameFactory;
+import com.codahale.metrics.jmx.ObjectNameFactory;
 
 public class MetrixAgentObjectNameFactory implements ObjectNameFactory {
 
