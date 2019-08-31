@@ -1,7 +1,8 @@
 <Project projectName="metrixagent">
   <Jar>./target/classes</Jar>
-  <AuxClasspathEntry>../../.m2/repository/org/ow2/asm/asm-debug-all/5.2/asm-debug-all-5.2.jar</AuxClasspathEntry>
-  <AuxClasspathEntry>../../.m2/repository/io/dropwizard/metrics/metrics-core/3.1.2/metrics-core-3.1.2.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>../../.m2/repository/org/ow2/asm/asm-debug-all/7.2/asm-debug-all-7.2.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>../../.m2/repository/io/dropwizard/metrics/metrics-core/4.1.0/metrics-core-3.1.2.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>../../.m2/repository/io/dropwizard/metrics/metrics-jmx/4.10.0/metrics-core-3.1.2.jar</AuxClasspathEntry>
   <AuxClasspathEntry>../../.m2/repository/org/slf4j/slf4j-api/1.7.7/slf4j-api-1.7.7.jar</AuxClasspathEntry>
   <SrcDir>./src/main/java</SrcDir>
 </Project>
