@@ -19,10 +19,11 @@ package com.mebigfatguy.metrixagent;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.ProtectionDomain;
 
 import org.objectweb.asm.ClassReader;
@@ -75,7 +76,8 @@ public class MetrixAgentTransformer implements ClassFileTransformer {
                     f.mkdirs();
                 }
 
-                try (OutputStream os = new BufferedOutputStream(new FileOutputStream("/tmp/" + className + ".class"))) {
+                String tempDir = System.getProperty("java.io.tmpdir");
+                try (OutputStream os = new BufferedOutputStream(Files.newOutputStream(Paths.get(tempDir, className + ".class")))) {
                     os.write(newClass);
                 }
             }
