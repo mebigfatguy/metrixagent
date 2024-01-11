@@ -42,22 +42,22 @@
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm</artifactId>
-			<version>7.2</version>
+			<version>9.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm-commons</artifactId>
-			<version>7.2</version>
+			<version>9.6</version>
 		</dependency>
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-core</artifactId>
-			<version>4.1.0</version>
+			<version>4.2.23</version>
 		</dependency>
 		<dependency>
 			<groupId>io.dropwizard.metrics</groupId>
 			<artifactId>metrics-jmx</artifactId>
-			<version>4.1.0</version>
+			<version>4.2.23</version>
 		</dependency>
 	</dependencies>
 

@@ -57,7 +57,7 @@ public class MetrixAgentMethodVisitor extends MethodVisitor {
     }
 
     public MetrixAgentMethodVisitor(MethodVisitor mv, int access, String desc, String fullyQualifiedMethod) {
-        super(Opcodes.ASM6, mv);
+        super(Opcodes.ASM9, mv);
         fqMethod = fullyQualifiedMethod;
         methodDesc = desc;
         isStatic = (access & Opcodes.ACC_STATIC) != 0;

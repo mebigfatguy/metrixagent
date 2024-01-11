@@ -27,7 +27,7 @@ public class MetrixAgentClassVisitor extends ClassVisitor {
     private String clsName;
 
     public MetrixAgentClassVisitor(ClassWriter cw) {
-        super(Opcodes.ASM6, cw);
+        super(Opcodes.ASM9, cw);
     }
 
     @Override
